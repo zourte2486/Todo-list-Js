@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List</title>
+    <style>
+        body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+    width: 300px;
+    margin: auto;
+}
+
+li {
+    padding: 10px;
+    background: #f3f3f3;
+    margin: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 5px;
+}
+
+.done {
+    text-decoration: line-through;
+    background: #d4edda;
+}
+
+button {
+    border: none;
+    padding: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+button:first-of-type {
+    background: #28a745;
+    color: white;
+    margin-right: 5px;
+}
+
+button:last-of-type {
+    background: #dc3545;
+    color: white;
+}
+
+    </style>
+</head>
+<body>
+
+    <h2>To-Do List</h2>
+    <input type="text" id="taskInput" placeholder="Enter a task">
+    <button onclick="addTask()">Add</button>
+
+    <ul id="taskList"></ul>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", loadTasks);
+
+function addTask() {
+    let taskInput = document.getElementById("taskInput");
+    let taskText = taskInput.value.trim();
+
+    if (taskText === "") {
+        alert("Task cannot be empty!");
+        return;
+    }
+
+    let taskList = document.getElementById("taskList");
+    let li = document.createElement("li");
+    li.innerHTML = `${taskText} 
+        <button onclick="toggleDone(this)">✔️</button> 
+        <button onclick="removeTask(this)">❌</button>`;
+
+    taskList.appendChild(li);
+    saveTasks();
+    taskInput.value = "";
+}
+
+function removeTask(button) {
+    button.parentElement.remove();
+    saveTasks();
+}
+
+function toggleDone(button) {
+    button.parentElement.classList.toggle("done");
+    saveTasks();
+}
+
+function saveTasks() {
+    let tasks = [];
+    document.querySelectorAll("#taskList li").forEach(li => {
+        tasks.push({ text: li.firstChild.textContent, done: li.classList.contains("done") });
+    });
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+}
+
+function loadTasks() {
+    let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+    let taskList = document.getElementById("taskList");
+
+    tasks.forEach(task => {
+        let li = document.createElement("li");
+        if (task.done) li.classList.add("done");
+
+        li.innerHTML = `${task.text} 
+            <button onclick="toggleDone(this)">✔️</button> 
+            <button onclick="removeTask(this)">❌</button>`;
+
+        taskList.appendChild(li);
+    });
+}
+
+
+    </script>
+</body>
+</html>
